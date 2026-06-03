@@ -9,9 +9,9 @@ namespace ToolTest{
        std::string GetCurrentTime()
        {
               auto now = std::chrono::system_clock::now();
-              auto in_time_t = std::chrono::system_clock::to_time_t(now);
+              auto currentTime = std::chrono::system_clock::to_time_t(now);
               std::stringstream ss;
-              ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S");
+              ss<<std::put_time(std::localtime(&currentTime), "%Y-%m-%d %H:%M:%S");
               return ss.str();
        }
 
@@ -22,7 +22,7 @@ namespace ToolTest{
               std::string vStr = "";
               while(std::getline(ss, vStr, split))
               {
-                     if (vStr.empty())
+                     if (vStr.empty() || std::stoi(vStr) < 0)
                             versionsCode.push_back(0);
                      else
                             versionsCode.push_back(std::stoi(vStr));

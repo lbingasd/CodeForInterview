@@ -12,7 +12,7 @@ int main()
 {
        LOG_DEBUG << "start main";
        LazySingleton::GetInstance()->Show();
-       
+       std::string currentTime = ToolTest::GetCurrentTime();
        Timer Timer;
        Timer.Start([](){
               auto now = std::chrono::system_clock::now();
