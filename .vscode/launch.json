@@ -1,21 +1,30 @@
 {
-       // Use IntelliSense to learn about possible attributes.
-       // Hover to view descriptions of existing attributes.
-       // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-       "version": "0.2.0",
-       "configurations": [
-       {
-              "name": "CLangBuild",
-              "type": "cppdbg",
-              "request": "launch",
-              "program": "${workspaceFolder}/build/main",
-              "args": [],
-              "stopAtEntry": false,
-              "cwd": "${workspaceFolder}",
-              "environment": [],
-              "externalConsole": false,
-              "MIMode": "lldb",
-              "preLaunchTask": "C/C++: clang build active file"
-       }
-       ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CMake Debug Windows VS2022",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\build\\windows-vs2022\\Debug\\CodeForInterview.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake: build Windows VS2022 Debug"
+        },
+        {
+            "name": "CMake Debug macOS clang",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/mac-clang/CodeForInterview",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "CMake: build macOS clang Debug"
+        }
+    ]
 }

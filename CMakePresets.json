@@ -1,0 +1,38 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "windows-vs2022",
+            "displayName": "Windows VS2022 x64",
+            "description": "Configure with Visual Studio 2022 for Windows x64.",
+            "generator": "Visual Studio 17 2022",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/build/windows-vs2022"
+        },
+        {
+            "name": "mac-clang",
+            "displayName": "macOS clang Debug",
+            "description": "Configure with macOS clang and Unix Makefiles.",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/mac-clang",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-vs2022-debug",
+            "displayName": "Build Windows VS2022 Debug",
+            "configurePreset": "windows-vs2022",
+            "configuration": "Debug"
+        },
+        {
+            "name": "mac-clang-debug",
+            "displayName": "Build macOS clang Debug",
+            "configurePreset": "mac-clang"
+        }
+    ]
+}
