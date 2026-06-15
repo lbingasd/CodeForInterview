@@ -9,6 +9,7 @@ public:
         if (_count) (*_count)++;
     }
 
+    //注意入参
     SharedPtr& operator=(SharedPtr other) {
         std::swap(_ptr, other._ptr);
         std::swap(_count, other._count);
