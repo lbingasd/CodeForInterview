@@ -1,60 +1,102 @@
-#include <iostream>
 #include <unordered_map>
-#include <list>
-#include <mutex>
+using namespace std;
 
-template<typename K, typename V>
-class LRUCache 
-{
-public:
-    LRUCache(size_t capacity) : _capacity(capacity) {}
+class LRUCache {
+private:
+    struct Node {
+        int key;
+        int value;
+        Node* prev;
+        Node* next;
 
-    // 获取数据
-    bool Get(const K& key, V& value) {
-        std::lock_guard<std::mutex> lock(_mtx);
-        
-        auto it = _map.find(key);
-        if (it == _map.end()) {
-            return false;
-        }
+        Node(int k, int v) : key(k), value(v), prev(nullptr), next(nullptr) {}
+    };
 
-        // 将访问过的节点移动到链表头部（最近使用）
-        _list.splice(_list.begin(), _list, it->second);
-        value = it->second->second;
-        return true;
+    int capacity;
+    unordered_map<int, Node*> cache;
+
+    // 虚拟头尾节点，简化插入和删除逻辑
+    Node* head;
+    Node* tail;
+
+    // 从链表中移除一个节点
+    void removeNode(Node* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
     }
 
-    // 插入数据
-    void Put(const K& key, const V& value) {
-        std::lock_guard<std::mutex> lock(_mtx);
+    // 把节点插入到头部，表示最近使用
+    void addToHead(Node* node) {
+        node->next = head->next;
+        node->prev = head;
 
-        auto it = _map.find(key);
-        if (it != _map.end()) {
-            // key 已存在，更新值并移到头部
-            it->second->second = value;
-            _list.splice(_list.begin(), _list, it->second);
+        head->next->prev = node;
+        head->next = node;
+    }
+
+    // 把节点移动到头部
+    void moveToHead(Node* node) {
+        removeNode(node);
+        addToHead(node);
+    }
+
+    // 删除尾部节点，尾部表示最久未使用
+    Node* removeTail() {
+        Node* node = tail->prev;
+        removeNode(node);
+        return node;
+    }
+
+public:
+    LRUCache(int capacity) : capacity(capacity) {
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+
+        head->next = tail;
+        tail->prev = head;
+    }
+
+    int get(int key) {
+        // key 不存在，返回 -1
+        if (!cache.count(key)) {
+            return -1;
+        }
+
+        // key 被访问，移动到头部
+        Node* node = cache[key];
+        moveToHead(node);
+
+        return node->value;
+    }
+
+    void put(int key, int value) {
+        // key 已存在：更新 value，并移动到头部
+        if (cache.count(key)) {
+            Node* node = cache[key];
+            node->value = value;
+            moveToHead(node);
             return;
         }
 
-        // 如果达到容量上限，淘汰最久未使用的（尾部）
-        if (_list.size() == _capacity) {
-            K lastKey = _list.back().first;
-            _map.erase(lastKey);
-            _list.pop_back();
-        }
+        // key 不存在：创建新节点，插入头部
+        Node* node = new Node(key, value);
+        cache[key] = node;
+        addToHead(node);
 
-        // 插入新节点到头部
-        _list.emplace_front(key, value);
-        _map[key] = _list.begin();
+        // 超过容量，删除最久未使用节点
+        if ((int)cache.size() > capacity) {
+            Node* old = removeTail();
+            cache.erase(old->key);
+            delete old;
+        }
     }
 
-private:
-    size_t _capacity;
-    std::mutex _mtx;
-    
-    // 存储键值对：{Key, Value}
-    std::list<std::pair<K, V>> _list;
-    
-    // 存储 Key 到链表迭代器的映射，实现 O(1) 查找
-    std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> _map;
+    ~LRUCache() {
+        Node* cur = head;
+        while (cur) {
+            Node* next = cur->next;
+            delete cur;
+            cur = next;
+        }
+    }
 };
