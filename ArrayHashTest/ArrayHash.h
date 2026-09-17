@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <deque>
 #include <string>
@@ -143,20 +144,27 @@ int subarraySum(std::vector<int>& nums, int k)
 
 /**
  * 6. 无重复字符的最长子串
- * 依据：LeetCode Top Interview 150 / Sliding Window 题单中的经典可变窗口题。
- * 思路：右指针扩展，重复字符出现时移动左指针并维护频次。
+ * 难度：中等
+ * 思路：滑动窗口记录每个字符最后出现的位置；遇到窗口内的重复字符时，
+ *       左边界直接移动到该字符上次出现位置的下一位。
  * 复杂度：时间 O(N)，空间 O(字符集大小)
+ * 注意：按 std::string 的字节处理字符；unsigned char 转换可避免负下标。
  */
 int lengthOfLongestSubstring(const std::string& s)
 {
-    std::unordered_map<char, int> count;
+    // lastSeen[ch] 表示字符 ch 最近一次出现的下标，-1 表示尚未出现。
+    std::array<int, 256> lastSeen;
+    lastSeen.fill(-1);
+
     int left = 0;
     int best = 0;
     for (int right = 0; right < static_cast<int>(s.size()); ++right) {
-        ++count[s[right]];
-        while (count[s[right]] > 1) {
-            --count[s[left++]];
+        unsigned char ch = static_cast<unsigned char>(s[right]);
+        // 只有重复字符位于当前窗口 [left, right) 内时，才需要移动左边界。
+        if (lastSeen[ch] >= left) {
+            left = lastSeen[ch] + 1;
         }
+        lastSeen[ch] = right;
         best = std::max(best, right - left + 1);
     }
     return best;
