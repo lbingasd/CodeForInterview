@@ -44,6 +44,18 @@ std::vector<int> inorderTraversal(TreeNode* root)
     return result;
 }
 
+//中序遍历递归实现
+void inorder(TreeNode* root, std::vector<int>& result) 
+{
+    if (root == nullptr) {
+        return; // 递归基：节点为空直接返回
+    }
+
+    inorder(root->left, result);  // 1. 先递归遍历左子树
+    result.push_back(root->val);  // 2. 访问当前根节点
+    inorder(root->right, result); // 3. 再递归遍历右子树
+}
+
 /**
  * 2. 二叉树层序遍历
  * 难度：中等
